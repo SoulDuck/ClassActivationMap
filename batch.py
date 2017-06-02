@@ -2,9 +2,7 @@ import numpy as np
 from PIL import Image
 import os, sys
 import tensorflow as tf
-
-
-
+import random
 def make_tfrecord_rawdata(paths , labels, tfrecord_path):
     if os.path.exists(tfrecord_path):
         print tfrecord_path + 'is exists'
@@ -117,7 +115,7 @@ def get_shuffled_batch(tfrecord_path, batch_size, resize):
     return images, labels
 
 
-def read_one_example(tfrecord_path, batch_size, resize):
+def read_one_example(tfrecord_path, resize):
     filename_queue = tf.train.string_input_producer([tfrecord_path], num_epochs=10)
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
@@ -143,3 +141,12 @@ def read_one_example(tfrecord_path, batch_size, resize):
                                                        target_width=resize_width)
     # images  = tf.train.shuffle_batch([image ] , batch_size =batch_size  , capacity =30 ,num_threads=3 , min_after_dequeue=10)
     return image, label
+
+def next_batch(imgs, labs , batch_size):
+    indices=random.sample(range(np.shape(imgs)[0]) , batch_size)
+    batch_xs=imgs[indices]
+    batch_ys=labs[indices]
+    return batch_xs , batch_ys
+
+def make_train_test_imgs_labs( imgs, labs, imgs_1 ,labs_1 ,train_ratio ):
+    imgs     

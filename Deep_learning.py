@@ -3,6 +3,7 @@ from CAM import get_class_map
 from CAM import inspect_cam
 import random
 import numpy as np
+import batch
 #import matplotlib.pyplot as plt
 import os , sys , glob
 from tensorflow.examples.tutorials.mnist import input_data
@@ -73,11 +74,6 @@ def algorithm(y_conv , y_ , learning_rate):
     correct_pred=tf.equal(tf.argmax(y_conv , 1) , tf.argmax(y_ , 1))
     accuracy =  tf.reduce_mean(tf.cast(correct_pred , dtype=tf.float32))
     return pred,pred_cls , cost , train_op,correct_pred ,accuracy
-def next_batch(imgs, labs , batch_size):
-    indices=random.sample(range(np.shape(imgs)[0]) , batch_size)
-    batch_xs=imgs[indices]
-    batch_ys=labs[indices]
-    return batch_xs , batch_ys
 
 if __name__ == '__main__':
 
@@ -94,6 +90,10 @@ if __name__ == '__main__':
     image_width = 28
     image_color_ch = 1
     n_classes = 10
+    train_imgs=mnist_train_imgs
+    train_labs=mnist_train_labs
+    test_imgs=mnist_test_imgs
+    test_labs=mnist_test_labs
     #####
 
     x_ = tf.placeholder(dtype=tf.float32, shape=[None, image_height, image_width, image_color_ch])
@@ -114,6 +114,6 @@ if __name__ == '__main__':
     for step in range(50000):
         if step % check_point==0:
             inspect_cam(sess, cam , top_conv , mnist_test_imgs , mnist_test_labs ,step , 50 , x_,y_,y_conv)
-        batch_xs , batch_ys=next_batch(mnist_train_imgs , mnist_train_labs , batch_size=60)
+        batch_xs , batch_ys=batch.next_batch(train_imgs , train_labs , batch_size=60)
         train_acc, _ =sess.run([accuracy,train_op] , feed_dict={x_:batch_xs , y_:batch_ys})
         print train_acc
