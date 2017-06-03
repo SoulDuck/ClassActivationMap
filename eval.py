@@ -1,10 +1,16 @@
 import data
+from PIL import Image
+import PIL
 from CAM import *
 
 
+#image_height , image_width , image_color_ch , n_classes ,train_imgs , train_labs , test_imgs, test_labs = data.eye_64x64()
 
-image_height , image_width , image_color_ch , n_classes ,train_imgs , train_labs , test_imgs, test_labs = data.eye_64x64()
-sample_img=test_imgs[0]
+
+Img=Image.open('./sample_img/150029_20131211_R (1).png')
+img=img.resize((64,64),PIL.Image.ANTIALIAS)
+sample_img=np.asarray(img)
+
 sample_img=sample_img.reshape([1,64,64,3])
 tmp_label=np.array([[1,0]])
 print np.shape(tmp_label)
@@ -20,7 +26,7 @@ cam=tf.get_default_graph().get_tensor_by_name('classmap_reshape:0')
 y_conv_tensor=tf.get_default_graph().get_tensor_by_name('y_conv:0')
 y_conv,result=sess.run([y_conv_tensor,softmax], feed_dict={x_:sample_img })
 cam_abnormal , cam_normal=eval_inspect_cam(sess,cam,top_conv, sample_img , 1,x_,y_,y_conv_tensor)
-
+result
 if __debug__ ==True:
     print np.shape(cam_abnormal)
     plt.imshow(cam_abnormal)
