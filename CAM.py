@@ -40,7 +40,7 @@ def inspect_cam(sess, cam , top_conv ,test_imgs, test_labs, global_step , num_im
 
             if ori.shape[-1]==1: #grey
                 plt.imshow( 1-ori.reshape([ori.shape[0] , ori.shape[1]]))
-                plt.imshow( vis.reshape([vis.shape[0] , vis.shape[1]]) , cmap=plt.cm.jet , alpha=0.5 , interpolation='nearest' , vmin=0 , vmax=1)
+            plt.imshow( vis.reshape([vis.shape[0] , vis.shape[1]]) , cmap=plt.cm.jet , alpha=0.5 , interpolation='nearest' , vmin=0 , vmax=1)
             cmap_file='{}/cmap_{}.png'.format(save_dir, global_step)
             plt.savefig(cmap_file)
             plt.close();
