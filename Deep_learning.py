@@ -68,12 +68,12 @@ def algorithm(y_conv , y_ , learning_rate):
         print y_conv.get_shape()
         print y_.get_shape()
 
-    pred=tf.nn.softmax(y_conv)
-    pred_cls=tf.argmax(pred , axis=1)
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y_conv , labels=y_))
+    pred=tf.nn.softmax(y_conv , name='softmax')
+    pred_cls=tf.argmax(pred , axis=1 , name='pred_cls')
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y_conv , labels=y_) , name='cost')
     train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost)
-    correct_pred=tf.equal(tf.argmax(y_conv , 1) , tf.argmax(y_ , 1))
-    accuracy =  tf.reduce_mean(tf.cast(correct_pred , dtype=tf.float32))
+    correct_pred=tf.equal(tf.argmax(y_conv , 1) , tf.argmax(y_ , 1) , name='correct_pred')
+    accuracy =  tf.reduce_mean(tf.cast(correct_pred , dtype=tf.float32) , name='accuracy')
     return pred,pred_cls , cost , train_op,correct_pred ,accuracy
 
 if __name__ == '__main__':
