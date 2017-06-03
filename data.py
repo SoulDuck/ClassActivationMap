@@ -24,7 +24,7 @@ def mnist_28x28():
     return image_height , image_width , image_color_ch , n_classes, train_imgs , train_labs , test_imgs, test_labs
     #####
 def eye_64x64():
-    folder_paths='/Users/seongjungkim/PycharmProjects/ClassActivationMap/data/'
+    folder_paths='./data/'
     train_imgs=np.load(folder_paths+'train_eye_64_imgs.npy')
     train_labs=np.load(folder_paths+'train_eye_64_labs.npy')
     val_imgs = np.load(folder_paths+'val_eye_64_imgs.npy')
