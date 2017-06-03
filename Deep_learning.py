@@ -1,6 +1,7 @@
 import tensorflow as tf
 from CAM import get_class_map
 from CAM import inspect_cam
+import data
 import random
 import numpy as np
 import batch
@@ -77,24 +78,7 @@ def algorithm(y_conv , y_ , learning_rate):
 
 if __name__ == '__main__':
 
-    mnist = input_data.read_data_sets('MNIST_DATA_SET', one_hot=True)
-    mnist_train_imgs=np.reshape(mnist.train.images , (55000 ,28,28,1))
-    mnist_train_labs=mnist.train.labels
-    mnist_test_imgs = np.reshape(mnist.test.images, (10000, 28, 28, 1))
-    mnist_test_labs = mnist.test.labels
-
-    print mnist_test_imgs.shape , mnist_train_imgs.shape , mnist_train_labs.shape , mnist_test_labs.shape
-
-    ####
-    image_height = 28
-    image_width = 28
-    image_color_ch = 1
-    n_classes = 10
-    train_imgs=mnist_train_imgs
-    train_labs=mnist_train_labs
-    test_imgs=mnist_test_imgs
-    test_labs=mnist_test_labs
-    #####
+    image_height, image_width, image_color_ch, n_classes,train_imgs, train_labs, test_imgs, test_labs=data.eye_64x64()
 
     x_ = tf.placeholder(dtype=tf.float32, shape=[None, image_height, image_width, image_color_ch])
     y_ = tf.placeholder(dtype=tf.int32, shape=[None, n_classes])
@@ -105,15 +89,25 @@ if __name__ == '__main__':
     y_conv   = gap('gap' ,layer,n_classes)
     cam=get_class_map('gap',top_conv,0,im_width=image_width)
     pred, pred_cls, cost,train_op, correct_pred, accuracy=algorithm(y_conv , y_ ,0.005)
-
+    saver=tf.train .Saver()
     sess=tf.Session()
     init_op=tf.global_variables_initializer()
     sess.run(init_op)
+    try:
+        saver.restore(sess, './model/best_acc.ckpt')
+        print 'model was restored!'
+    except tf.errors.NotFoundError:
+        print 'there was no model'
 
+    max_val=0
     check_point=1000
     for step in range(50000):
         if step % check_point==0:
-            inspect_cam(sess, cam , top_conv , mnist_test_imgs , mnist_test_labs ,step , 50 , x_,y_,y_conv)
+            inspect_cam(sess, cam , top_conv , test_imgs , test_labs,step , 50 , x_,y_,y_conv)
+            val_acc, val_loss = sess.run([accuracy, cost], feed_dict={x_: test_imgs[:100], y_: test_labs[:100]})
+            print val_acc , val_loss
+            if val_acc > max_val:
+                saver.save(sess, './model/best_acc.ckpt')
+                print 'model was saved!'
         batch_xs , batch_ys=batch.next_batch(train_imgs , train_labs , batch_size=60)
-        train_acc, _ =sess.run([accuracy,train_op] , feed_dict={x_:batch_xs , y_:batch_ys})
-        print train_acc
+        train_acc, train_loss,_ =sess.run([accuracy,cost,train_op] , feed_dict={x_:batch_xs , y_:batch_ys})
