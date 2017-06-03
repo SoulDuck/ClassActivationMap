@@ -17,7 +17,7 @@ def convolution2d(name,x,out_ch,k=3 , s=2 , padding='SAME'):
         layer=tf.nn.conv2d(x , filter ,[1,s,s,1] , padding)+bias
         layer=tf.nn.relu(layer)
         if __debug__ == True:
-            print 'layer shape : ' ,layer.shape
+            print 'layer shape : ' ,layer.get_shape()
 
         return layer
 
@@ -25,7 +25,7 @@ def max_pool(x , k=3 , s=2 , padding='SAME'):
 
     if __debug__ ==True:
         print 'layer name :'
-        print 'layer shape :',layer.shape
+        print 'layer shape :',layer.get_shape()
     return tf.nn.max_pool(x , ksize=[1,k,k,1] , strides=[1,s,s,1] , padding=padding)
 
 
@@ -45,7 +45,7 @@ def affine(name,x,out_ch ,keep_prob):
         layer=tf.nn.relu(layer)
         layer=tf.nn.dropout(layer , keep_prob)
         print 'layer name :'
-        print 'layer shape :',layer.get_shape
+        print 'layer shape :',layer.get_shape()
         print 'layer dropout rate :',keep_prob
         return layer
 def gap(name,x , n_classes ):
