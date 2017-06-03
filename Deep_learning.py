@@ -15,7 +15,7 @@ def convolution2d(name,x,out_ch,k=3 , s=2 , padding='SAME'):
         filter=tf.get_variable("w" , [k,k,in_ch , out_ch] , initializer=tf.contrib.layers.xavier_initializer())
         bias=tf.Variable(tf.constant(0.1) , out_ch)
         layer=tf.nn.conv2d(x , filter ,[1,s,s,1] , padding)+bias
-        layer=tf.nn.relu(layer)
+        layer=tf.nn.relu(layer , name='relu')
         if __debug__ == True:
             print 'layer shape : ' ,layer.get_shape()
 
@@ -53,7 +53,7 @@ def gap(name,x , n_classes ):
     gap_x=tf.reduce_mean(x, (1,2))
     with tf.variable_scope(name) as scope:
         gap_w=tf.get_variable('w' , shape=[in_ch , n_classes] , initializer=tf.random_normal_initializer(0,0.01) , trainable=True)
-    y_conv=tf.matmul(gap_x, gap_w)
+    y_conv=tf.matmul(gap_x, gap_w , name='y_conv')
     return y_conv
 
 def algorithm(y_conv , y_ , learning_rate):
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     y_ = tf.placeholder(dtype=tf.int32, shape=[None, n_classes] ,name='y_')
     layer = convolution2d('conv1',x_,64 )
     layer = max_pool(layer)
-    top_conv = convolution2d('conv2', x_, 128)
+    top_conv = convolution2d('top_conv', x_, 128)
     layer = max_pool(top_conv)
     y_conv   = gap('gap' ,layer,n_classes)
     cam=get_class_map('gap',top_conv,0,im_width=image_width)
@@ -101,10 +101,11 @@ if __name__ == '__main__':
 
     max_val=0
     check_point=1000
-    for step in range(50000):
+    for step in range(100):
         if step % check_point==0:
             inspect_cam(sess, cam , top_conv , test_imgs , test_labs,step , 50 , x_,y_,y_conv)
             val_acc, val_loss = sess.run([accuracy, cost], feed_dict={x_: test_imgs[:100], y_: test_labs[:100]})
+            print np.shape(cam)
             print val_acc , val_loss
             if val_acc > max_val:
                 saver.save(sess, './model/best_acc.ckpt')
