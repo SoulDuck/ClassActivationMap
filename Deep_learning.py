@@ -5,9 +5,10 @@ import data
 import random
 import numpy as np
 import batch
-#import matplotlib.pyplot as plt
 import os , sys , glob
 from tensorflow.examples.tutorials.mnist import input_data
+#import matplotlib.pyplot as plt
+
 
 def convolution2d(name,x,out_ch,k=3 , s=2 , padding='SAME'):
     with tf.variable_scope(name) as scope:
@@ -82,7 +83,11 @@ if __name__ == '__main__':
 
     x_ = tf.placeholder(dtype=tf.float32, shape=[None, image_height, image_width, image_color_ch] , name='x_')
     y_ = tf.placeholder(dtype=tf.int32, shape=[None, n_classes] ,name='y_')
-    layer = convolution2d('conv1',x_,64 )
+    layer = convolution2d('conv1',x_,64,k=5)
+    layer = max_pool(layer)
+    layer = convolution2d('conv2',layer,64 )
+    layer = max_pool(layer)
+    layer = convolution2d('conv3',layer, 128)
     layer = max_pool(layer)
     top_conv = convolution2d('top_conv', x_, 128)
     layer = max_pool(top_conv)
