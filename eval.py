@@ -7,7 +7,7 @@ from CAM import *
 #image_height , image_width , image_color_ch , n_classes ,train_imgs , train_labs , test_imgs, test_labs = data.eye_64x64()
 
 
-Img=Image.open('./sample_img/150029_20131211_R (1).png')
+img=Image.open('./sample_img/150029_20131211_R (1).png')
 img=img.resize((64,64),PIL.Image.ANTIALIAS)
 sample_img=np.asarray(img)
 

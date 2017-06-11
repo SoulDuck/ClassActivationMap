@@ -148,5 +148,3 @@ def next_batch(imgs, labs , batch_size):
     batch_ys=labs[indices]
     return batch_xs , batch_ys
 
-def make_train_test_imgs_labs( imgs, labs, imgs_1 ,labs_1 ,train_ratio ):
-    imgs     
